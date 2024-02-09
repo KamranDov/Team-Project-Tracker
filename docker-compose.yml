@@ -1,0 +1,72 @@
+#version: '3.1'
+#
+##volumes:
+##  docker-volumes_data:
+#
+#services:
+#  team_project_tracker:
+#    container_name: team-tracker-db
+#    image: postgres
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: 123456789root
+#      POSTGRES_DB: team_project_tracker
+#    ports:
+#      - "5432:5432"
+##    restart: always
+#    volumes:
+#      - ./docker-volumes_data:/var/lib/postgresql/data
+#    networks:
+#      - team-project-tracker-net
+#
+#  project_backend:
+##    restart: always
+#    container_name: team-tracker-backend
+#    image: team-project-tracker:0.0.1
+#    build: .
+#    ports:
+#      - "8089:8080"
+#    networks:
+#      - team-project-tracker-net
+#
+#volumes:
+#  docker-volumes_data:
+#networks:
+#  team-project-tracker-net:
+#      driver: bridge
+#
+##    depends_on:
+##      - team_project_tracker
+##    environment:
+##      SPRING_DATASOURCE_URL: 'jdbc:postgresql://team_project_tracker:5432/team_project_tracker'
+###      DB_USERNAME: admin
+###      DB_PASSWORD: kamran1001
+##
+###
+###
+####    hostname: team-tracker-backend
+###
+####    environment:
+####      DB_HOSTNAME: postgres_db
+####    depends_on:
+####      - db
+###
+####networks:
+####  team-tracker-network:
+###
+###volumes:
+###  docker-volumes_data: {}
+####  app:
+####    build:
+####      context: .
+####      dockerfile: Dockerfile
+####    ports:
+####      - "8090:8089"
+####    container_name: team-tracker-backend
+####    environment:
+####      db-url: jdbc:postgresql://db:5433/team_project_tracker
+####      db-username: admin
+####      db-password: kamran1001
+####    depends_on:
+####      - db
+####    restart: always

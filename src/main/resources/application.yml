@@ -1,0 +1,47 @@
+spring:
+  #Database Configuration
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/team_project_tracker?createDatabaseIfNotExist=true
+    username: postgres
+    password: 123456789root
+
+  #JPA Configuration
+  jpa:
+    #    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    show_sql: true
+
+#Docker Configuration
+#  docker:
+#    compose:
+#      enabled: true
+#      lifecycle-management: start_and_stop
+
+
+#  main:
+#    allow-bean-definition-overriding: true
+
+#SQL Configuration
+#  sql:
+#   init:
+#     mode: always
+#     platform: mysql
+#     schema-locations: classpath:SqlCommands/create_roles.sql
+#, classpath:SqlCommands/create_Super_Admin.sql
+
+#Security Configuration
+security:
+  jwt:
+    secret: "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDYj4ZZDmECmQ3RveM3IHmhKJmjG9AFA6m4eMj1bmhmZW1FHMPcikdKeMcThKVvfmV8soxQz64ZS"
+    lifetime: 30m
+
+#Server Port Configuration
+server:
+  port: 8090

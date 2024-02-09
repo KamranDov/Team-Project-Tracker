@@ -3,6 +3,7 @@ package com.crocusoft.teamprojecttracker.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -17,15 +18,16 @@ import java.util.UUID;
 public class DailyReport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
     String name;
     String surname;
     String description;
 
+    @LastModifiedDate
     @Column(name = "update_time")
     LocalDate updateTime;
 
     @ManyToOne
-    User user;
+    User employee;
 }

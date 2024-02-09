@@ -17,10 +17,10 @@ import java.util.UUID;
 public class Project {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
     String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    List<User> users;
+    List<User> employees;
 }
