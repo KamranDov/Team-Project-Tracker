@@ -23,5 +23,15 @@ GeneralExceptionHandler {
                 , HttpStatus.BAD_REQUEST
                 , exception.getMessage());
     }
+
+    @ExceptionHandler(RolePermissionException.class)
+    public ExceptionResponse roleException(RolePermissionException exception) {
+        return new ExceptionResponse(
+                LocalDateTime.now()
+                , HttpStatus.FORBIDDEN.value()
+                , HttpStatus.FORBIDDEN
+                , exception.getMessage());
+    }
+
 }
 

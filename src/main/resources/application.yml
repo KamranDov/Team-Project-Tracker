@@ -17,6 +17,7 @@ spring:
       ddl-auto: update
     generate-ddl: true
     show_sql: true
+    open-in-view: false
 
 #Docker Configuration
 #  docker:

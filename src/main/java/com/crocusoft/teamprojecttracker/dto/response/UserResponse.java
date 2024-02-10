@@ -1,5 +1,6 @@
 package com.crocusoft.teamprojecttracker.dto.response;
 
+import com.crocusoft.teamprojecttracker.model.Team;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
@@ -16,7 +17,9 @@ public record UserResponse(
         @JsonProperty("email")
         String email,
         @JsonProperty("roles")
-        List<String> roles
+        List<String> roles,
+        @JsonProperty("teamName")
+        String teamName
 
 ) {
 }
