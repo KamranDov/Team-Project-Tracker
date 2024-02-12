@@ -33,5 +33,22 @@ GeneralExceptionHandler {
                 , exception.getMessage());
     }
 
+//    @ExceptionHandler(AuthenticationException.class)
+//    public ExceptionResponse authException(AuthenticationException exception) {
+//        return new ExceptionResponse(
+//                LocalDateTime.now()
+//                , HttpStatus.UNAUTHORIZED.value()
+//                , HttpStatus.UNAUTHORIZED
+//                , exception.getMessage());
+//    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ExceptionResponse authException(UnauthorizedException exception) {
+        return new ExceptionResponse(
+                LocalDateTime.now()
+                , HttpStatus.UNAUTHORIZED.value()
+                , HttpStatus.UNAUTHORIZED
+                , exception.getMessage());
+    }
 }
 

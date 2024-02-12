@@ -25,14 +25,14 @@ public class TeamController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<TeamResponse> createTeam(@RequestBody TeamRequest teamRequest) {
-        return new ResponseEntity<>(teamService.createTeam(teamRequest), CREATED);
+    public ResponseEntity<TeamResponse> createTeam(@RequestBody String createdTeamName) {
+        return new ResponseEntity<>(teamService.createTeam(createdTeamName), CREATED);
     }
 
     @PutMapping("/edit")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<Map<String, Team>> editTeam(String changeTeamName, @RequestBody TeamRequest teamRequest) {
-        return new ResponseEntity<>(teamService.editTeam(changeTeamName, teamRequest), CREATED);
+    public ResponseEntity<Map<String, Team>> editTeam(String changeTeamName, String newTeamName) {
+        return new ResponseEntity<>(teamService.editTeam(changeTeamName, newTeamName), CREATED);
     }
 
     @GetMapping("/{team-name}")

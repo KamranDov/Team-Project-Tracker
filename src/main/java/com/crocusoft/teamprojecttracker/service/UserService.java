@@ -37,13 +37,7 @@ public class UserService {
     }
 
 
+    public void edit(){
 
-
-
-
-    public User getSignedInUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByEmail(authentication.getAuthorities().toString())
-                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

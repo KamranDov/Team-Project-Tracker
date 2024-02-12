@@ -6,6 +6,7 @@ import com.crocusoft.teamprojecttracker.dto.response.AuthResponse;
 import com.crocusoft.teamprojecttracker.dto.response.UserResponse;
 import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
 import com.crocusoft.teamprojecttracker.exception.RolePermissionException;
+import com.crocusoft.teamprojecttracker.exception.UnauthorizedException;
 import com.crocusoft.teamprojecttracker.exception.UserRegistrationException;
 import com.crocusoft.teamprojecttracker.mapper.Convert;
 import com.crocusoft.teamprojecttracker.mapper.ModelMapper;
@@ -41,10 +42,10 @@ public class AuthService {
     private final Convert convert;
 
 
-    public UserResponse register(UserRequest userRequest) throws RolePermissionException, UserRegistrationException {
+    public UserResponse register(UserRequest userRequest) throws UserRegistrationException {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Team team = teamRepository.findByName(userRequest.getTeamName());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN"))) {
                 Set<Role> roleList = roleRepository.findAllByNameIn(userRequest.getRoles());
                 if (userRequest.getRoles().contains("SUPER_ADMIN")) {
@@ -72,13 +73,14 @@ public class AuthService {
         }
     }
 
-    public AuthResponse login(AuthRequest authRequest) {
+    public AuthResponse login(AuthRequest authRequest) throws UnauthorizedException {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.email(), authRequest.password()));
 
             if (authentication.isAuthenticated()) {
-                User authUser = userRepository.findByEmail(authRequest.email()).orElseThrow();
+                User authUser = userRepository.findByEmail(authRequest.email())
+                        .orElseThrow(() -> new UnauthorizedException("You have entered an email or password that does not exist."));
 
                 String token = jwtService.createToken(authUser);
                 String refreshToken = jwtService.createRefreshToken(authUser);
@@ -87,13 +89,12 @@ public class AuthService {
                         .accessToken(token)
                         .refreshToken(refreshToken)
                         .build();
-            } else {
-                throw new Exception();
             }
         } catch (Exception e) {
             log.error("Error occurred during user login: {}", e.getMessage());
-            throw new RuntimeException("An error occurred during user login.");
+            throw new UnauthorizedException("You have entered an email or password that does not exist.");
         }
+        throw new UnauthorizedException("Invalid email or password");
+
     }
 }
-

@@ -9,6 +9,8 @@ public record AuthResponse(
         String accessToken,
         @JsonProperty("refresh_token")
         String refreshToken
+
+
 ) {
 
 }

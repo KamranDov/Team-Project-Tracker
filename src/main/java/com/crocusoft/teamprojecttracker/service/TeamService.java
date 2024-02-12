@@ -24,17 +24,17 @@ public class TeamService {
     private final Convert convert;
     private final UserRepository userRepository;
 
-    public TeamResponse createTeam(TeamRequest teamRequest) {
+    public TeamResponse createTeam(String createdTeamName) {
         Team newTeam = new Team();
-        newTeam.setName(teamRequest.name());
+        newTeam.setName(createdTeamName);
         return convert.teamToTeamResponse(teamRepository.save(newTeam));
     }
 
-    public Map<String, Team> editTeam(String teamName, TeamRequest teamRequest) {
-        Team existingTeam = (teamMap.get(teamName) == null) ? teamRepository.findByName(teamName) : teamMap.get(teamName);
+    public Map<String, Team> editTeam(String changeTeamName, String newTeamName) {
+        Team existingTeam = (teamMap.get(changeTeamName) == null) ? teamRepository.findByName(changeTeamName) : teamMap.get(changeTeamName);
         if (existingTeam != null) {
-            existingTeam.setName(teamRequest.name());
-            teamMap.put(teamRequest.name(), existingTeam);
+            existingTeam.setName(newTeamName);
+            teamMap.put(newTeamName, existingTeam);
             teamRepository.save(existingTeam);
             return teamMap;
         } else throw new IllegalArgumentException("No team name found to update");

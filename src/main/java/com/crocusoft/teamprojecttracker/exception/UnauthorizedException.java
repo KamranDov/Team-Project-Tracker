@@ -3,9 +3,9 @@ package com.crocusoft.teamprojecttracker.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UserRegistrationException extends Exception {
-    public UserRegistrationException(String message) {
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+public class UnauthorizedException extends Exception{
+    public UnauthorizedException(String message) {
         super(message);
     }
 }
