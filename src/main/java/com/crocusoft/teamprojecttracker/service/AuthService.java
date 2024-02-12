@@ -5,11 +5,15 @@ import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
 import com.crocusoft.teamprojecttracker.dto.response.AuthResponse;
 import com.crocusoft.teamprojecttracker.dto.response.UserResponse;
 import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
+import com.crocusoft.teamprojecttracker.exception.RolePermissionException;
+import com.crocusoft.teamprojecttracker.exception.UserRegistrationException;
 import com.crocusoft.teamprojecttracker.mapper.Convert;
 import com.crocusoft.teamprojecttracker.mapper.ModelMapper;
 import com.crocusoft.teamprojecttracker.model.Role;
+import com.crocusoft.teamprojecttracker.model.Team;
 import com.crocusoft.teamprojecttracker.model.User;
 import com.crocusoft.teamprojecttracker.repository.RoleRepository;
+import com.crocusoft.teamprojecttracker.repository.TeamRepository;
 import com.crocusoft.teamprojecttracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,7 @@ import java.util.Set;
 @Slf4j
 public class AuthService {
 
+    private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -36,44 +41,38 @@ public class AuthService {
     private final Convert convert;
 
 
-    public UserResponse register(UserRequest userRequest) throws Exception {
-//        try {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Set<Role> roleList = roleRepository.findAllByNameIn(userRequest.roles());
-//        Set<Role> allowedRoles = new HashSet<>();
-//
-//        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"))) {
-//            allowedRoles.add(new Role("ADMIN"));
-//            allowedRoles.add(new Role("HEAD"));
-//            allowedRoles.add(new Role("USER"));
-//        } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-//            allowedRoles.add(new Role("HEAD"));
-//            allowedRoles.add(new Role("USER"));
-//        } else {
-//            throw new AccessDeniedException("You don't have permission to perform this action.");
-//        }
-//
-//        if (!new HashSet<>(roleList).containsAll(allowedRoles)) {
-//            throw new IllegalArgumentException("Invalid roles specified for user registration.");
-//        }
-        User newUser = User.builder()
-                .name(userRequest.name())
-                .surname(userRequest.surname())
-                .password(passwordEncoder.encode(userRequest.password()))
-                .email(userRequest.email())
-                .userActionStatus(UserActionStatus.ACTIVE)
-                .authorities(roleList)
-                .build();
-        userRepository.save(newUser);
-        return this.convert.userToUserResponse(newUser);
-
-//        } catch (Exception e) {
-//            log.error("Error occurred during user registration: {}", e.getMessage());
-//            throw new UserRegistrationException("An error occurred during user registration.");
-//        }
+    public UserResponse register(UserRequest userRequest) throws RolePermissionException, UserRegistrationException {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Team team = teamRepository.findByName(userRequest.getTeamName());
+            if (authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN"))) {
+                Set<Role> roleList = roleRepository.findAllByNameIn(userRequest.getRoles());
+                if (userRequest.getRoles().contains("SUPER_ADMIN")) {
+                    log.error("Attempted to create a new SUPER ADMIN role by an ADMIN user");
+                    throw new RolePermissionException("ADMIN role does not have permission to create a new SUPER ADMIN role");
+                }
+                User newUser = User.builder()
+                        .name(userRequest.getName())
+                        .surname(userRequest.getSurname())
+                        .password(passwordEncoder.encode(userRequest.getPassword()))
+                        .email(userRequest.getEmail())
+                        .userActionStatus(UserActionStatus.ACTIVE)
+                        .authorities(roleList)
+                        .team(team)
+                        .build();
+                userRepository.save(newUser);
+                return this.convert.userToUserResponse(newUser);
+            } else {
+                log.error("Unauthorized attempt to register a new user by a non-ADMIN user");
+                throw new RolePermissionException("No permission");
+            }
+        } catch (Exception e) {
+            log.error("Error occurred during user registration: {}", e.getMessage());
+            throw new UserRegistrationException("An error occurred during user registration.");
+        }
     }
 
-    public AuthResponse login(AuthRequest authRequest) throws Exception {
+    public AuthResponse login(AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.email(), authRequest.password()));

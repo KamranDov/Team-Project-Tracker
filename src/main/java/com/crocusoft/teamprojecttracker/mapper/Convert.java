@@ -20,9 +20,11 @@ public class Convert {
                 user.getAuthorities().stream()
                         .filter(authority -> authority instanceof Role)
                         .map(authority -> ((Role) authority).getName())
-                        .toList());
+                        .toList(),
+                user.getTeam().getName());
 
     }
+
     public TeamResponse teamToTeamResponse(Team team) {
 
         return new TeamResponse(

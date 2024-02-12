@@ -21,22 +21,22 @@ public class TeamService {
 
     private final Map<String, Team> teamMap = new HashMap<>();
     private final TeamRepository teamRepository;
-    public final Convert convert;
+    private final Convert convert;
     private final UserRepository userRepository;
 
     public TeamResponse createTeam(TeamRequest teamRequest) {
         Team newTeam = new Team();
         newTeam.setName(teamRequest.name());
         return convert.teamToTeamResponse(teamRepository.save(newTeam));
-
     }
 
-    public TeamResponse editTeam(String teamName, TeamRequest teamRequest) {
+    public Map<String, Team> editTeam(String teamName, TeamRequest teamRequest) {
         Team existingTeam = (teamMap.get(teamName) == null) ? teamRepository.findByName(teamName) : teamMap.get(teamName);
         if (existingTeam != null) {
             existingTeam.setName(teamRequest.name());
             teamMap.put(teamRequest.name(), existingTeam);
-            return convert.teamToTeamResponse(teamRepository.save(existingTeam));
+            teamRepository.save(existingTeam);
+            return teamMap;
         } else throw new IllegalArgumentException("No team name found to update");
     }
 

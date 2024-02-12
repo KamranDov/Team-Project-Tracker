@@ -1,6 +1,8 @@
 package com.crocusoft.teamprojecttracker.model;
 
 import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -52,6 +54,7 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     Set<Role> authorities;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "team_id")
     Team team;
@@ -70,16 +73,6 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-    /*@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = user.getRoles();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-        return authorities;
-    }*/
     @Override
     public String getUsername() {
         return email;
