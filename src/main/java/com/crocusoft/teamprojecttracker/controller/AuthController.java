@@ -27,13 +27,11 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) throws UnauthorizedException {
-        try{
-        AuthResponse authResponse = authService.login(authRequest);
-            return ResponseEntity.ok(authResponse);
-        } catch (UnauthorizedException e){
-            String errorMessage = "an error occurred: " + e.getMessage();
-            return ResponseEntity.status(UNAUTHORIZED).body(errorMessage);
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
+        try {
+            return ResponseEntity.ok(authService.login(authRequest));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(UNAUTHORIZED).body("an error occurred: " + e.getMessage());
         }
 
     }
