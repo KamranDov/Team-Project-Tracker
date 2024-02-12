@@ -94,7 +94,6 @@ public class AuthService {
             log.error("Error occurred during user login: {}", e.getMessage());
             throw new UnauthorizedException("You have entered an email or password that does not exist.");
         }
-        throw new UnauthorizedException("Invalid email or password");
-
+        return null;
     }
 }

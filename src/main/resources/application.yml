@@ -4,7 +4,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/team_project_tracker?createDatabaseIfNotExist=true
     username: postgres
-    password: tural123456
+    password: 123456789root
 
   #JPA Configuration
   jpa:

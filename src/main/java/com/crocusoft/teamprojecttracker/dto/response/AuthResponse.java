@@ -10,7 +10,6 @@ public record AuthResponse(
         @JsonProperty("refresh_token")
         String refreshToken
 
-
 ) {
 
 }
