@@ -4,8 +4,8 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/team_project_tracker?createDatabaseIfNotExist=true
     username: postgres
-    password: 123456789root
-
+    password: lutfiar123456
+#123456789root
   #JPA Configuration
   jpa:
     #    defer-datasource-initialization: true
@@ -17,7 +17,6 @@ spring:
       ddl-auto: update
     generate-ddl: true
     show_sql: true
-    open-in-view: false
 
 #Docker Configuration
 #  docker:
