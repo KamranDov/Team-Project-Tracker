@@ -23,10 +23,6 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-//    @Column(unique = true, nullable = false)
-//    @Enumerated(EnumType.STRING)
-//    RoleEnum name;
-
     @Column(nullable = false, unique = true)
     String name;
 

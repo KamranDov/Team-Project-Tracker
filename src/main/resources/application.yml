@@ -46,3 +46,7 @@ security:
 #Server Port Configuration
 server:
   port: 8090
+
+#logging:
+#  file:
+#    name:

@@ -2,9 +2,7 @@ package com.crocusoft.teamprojecttracker.controller;
 
 import com.crocusoft.teamprojecttracker.dto.request.AuthRequest;
 import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
-import com.crocusoft.teamprojecttracker.dto.response.AuthResponse;
-import com.crocusoft.teamprojecttracker.dto.response.UserResponse;
-import com.crocusoft.teamprojecttracker.exception.RolePermissionException;
+import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
 import com.crocusoft.teamprojecttracker.exception.UnauthorizedException;
 import com.crocusoft.teamprojecttracker.exception.UserRegistrationException;
 import com.crocusoft.teamprojecttracker.service.AuthService;
@@ -39,7 +37,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
 //    @RolesAllowed({"ADMIN", "SUPER_ADMIN"})
-    ResponseEntity<UserResponse> register(@Valid @RequestBody UserRequest userRequest) throws UserRegistrationException {
+    ResponseEntity<CreateAndEditUserResponse> register(@Valid @RequestBody UserRequest userRequest) throws UserRegistrationException {
         return new ResponseEntity<>(authService.register(userRequest), CREATED);
 
     }

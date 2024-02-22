@@ -1,24 +1,34 @@
 package com.crocusoft.teamprojecttracker.service;
 
-import com.crocusoft.teamprojecttracker.dto.request.AuthRequest;
-import com.crocusoft.teamprojecttracker.dto.response.AuthResponse;
+import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
+import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
+import com.crocusoft.teamprojecttracker.dto.response.user.FilterUserResponse;
+import com.crocusoft.teamprojecttracker.dto.response.user.UserFilterDto;
+import com.crocusoft.teamprojecttracker.dto.response.user.ViewUserResponse;
+import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
+import com.crocusoft.teamprojecttracker.exception.RoleNotFoundException;
+import com.crocusoft.teamprojecttracker.exception.TeamNotFoundException;
+import com.crocusoft.teamprojecttracker.exception.UserNotFoundException;
+import com.crocusoft.teamprojecttracker.mapper.Convert;
+import com.crocusoft.teamprojecttracker.model.Project;
+import com.crocusoft.teamprojecttracker.model.Role;
+import com.crocusoft.teamprojecttracker.model.Team;
 import com.crocusoft.teamprojecttracker.model.User;
-import com.crocusoft.teamprojecttracker.repository.EmployeeRepository;
-import com.crocusoft.teamprojecttracker.repository.UserRepository;
+import com.crocusoft.teamprojecttracker.repository.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,18 +36,144 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
 
+    private final ProjectRepository projectRepository;
+    private final RoleRepository roleRepository;
+    private final TeamRepository teamRepository;
     private final UserRepository userRepository;
-    private final EmployeeRepository employeeRepository;
-    private final PasswordEncoder bCryptPasswordEncoder;
+    private final DailyReportRepository dailyReportRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final Convert convert;
 
-    public Optional<User> getEmployeeByUsername(String email) {
-        return employeeRepository.findByEmail(email);
+
+    public CreateAndEditUserResponse editUser(Long id, UserRequest userRequest, UserActionStatus userActionStatus) throws TeamNotFoundException, RoleNotFoundException, UserNotFoundException {
+        Optional<User> optionalTeam = userRepository.findById(id);
+        if (optionalTeam.isPresent()) {
+            User editUser = optionalTeam.get();
+
+            Team team = teamRepository.findById(userRequest.getTeamId()).orElseThrow(() -> new TeamNotFoundException("Team not found"));
+            if (team == null) {
+                log.error("Team not found with the name: {}", userRequest.getTeamId());
+                throw new TeamNotFoundException("Team not found with the given name");
+            }
+            Set<Role> roleList = roleRepository.findAllByNameIn(userRequest.getRoles());
+            if (roleList.isEmpty()) {
+                log.error("No roles found for the given role names: {}", userRequest.getRoles());
+                throw new RoleNotFoundException("No roles found for the given role names");
+            }
+            editUser.setName(userRequest.getName());
+            editUser.setSurname(userRequest.getSurname());
+            editUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+            editUser.setEmail(userRequest.getEmail());
+            editUser.setUserActionStatus(userActionStatus);
+            editUser.setAuthorities(roleList);
+            editUser.setTeam(team);
+
+            userRepository.save(editUser);
+            return this.convert.userToUserResponse(editUser);
+        } else {
+            log.error("User not found with the id: {}", id);
+            throw new UserNotFoundException("User not found with ID: " + id);
+        }
     }
 
+    public ViewUserResponse viewUserById(Long id) throws UserNotFoundException {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            ViewUserResponse viewUserResponse = convert.userToUserViewResponse(user);
+            return viewUserResponse;
+        } else throw new UserNotFoundException("User not found with ID: " + id);
+    }
 
-    public void edit(){
+    //    public FilterUserResponse filterUser(Integer pageNumber,
+//                                         Integer pageCount,
+//                                         String name,
+//                                         String surname,
+//                                         List<Long> teamId,
+//                                         List<Long> projectId) {
+//
+//        Page<User> userPage = userRepository.findAll(PageRequest.of(pageNumber, pageCount));
+//
+////        User nameOrSurname = userRepository.findByNameOrSurname(name, surname);
+//        List<User> pageContent = userPage.getContent();
+//
+//        List<UserFilterDto> filterDto = new ArrayList<>();
+//        for (User user : pageContent) {
+//            UserFilterDto userFilterDto = new UserFilterDto(
+//                    user.getId(),
+//                    user.getName(),
+//                    user.getSurname(),
+//                    user.getEmail(),
+//                    user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()),
+//                    user.getTeam().getId(),
+//                    user.getProjects().stream().map(Project::getId).toList());
+//            filterDto.add(userFilterDto);
+//        }
+//    return new FilterUserResponse(filterDto, userPage.getTotalPages(),userPage.getTotalElements(),userPage.hasNext());
+//    }
+//    public FilterUserResponse filterUser(Integer pageNumber,
+//                                         Integer pageCount,
+//                                         String name,
+//                                         String surname,
+//                                         List<Long> teamId,
+//                                         List<Long> projectId) {
+//
+//        Page<User> userPage = userRepository.findAll(PageRequest.of(pageNumber, pageCount));
+//
+//        List<User> pageContent = userPage.getContent();
+//
+//        List<UserFilterDto> filterDto = new ArrayList<>();
+//        for (User user : pageContent) {
+//            if ((name == null || user.getName().contains(name)) &&
+//                    (surname == null || user.getSurname().contains(surname)) &&
+//                    (teamId == null || teamId.contains(user.getTeam().getId())) &&
+//                    (projectId == null || user.getProjects().stream().map(Project::getId).anyMatch(projectId::contains))) {
+//
+//                UserFilterDto userFilterDto = new UserFilterDto(
+//                        user.getId(),
+//                        user.getName(),
+//                        user.getSurname(),
+//                        user.getEmail(),
+//                        user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()),
+//                        user.getTeam().getId(),
+//                        user.getProjects().stream().map(Project::getId).toList());
+//                filterDto.add(userFilterDto);
+//            }
+//        }
+//
+//        return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
+//    }
+    public FilterUserResponse filterUser(Integer pageNumber,
+                                         Integer pageCount,
+                                         String name,
+                                         String surname,
+                                         List<Long> teamId,
+                                         List<Long> projectId) {
 
+        Page<User> userPage = userRepository.findAll(PageRequest.of(pageNumber, pageCount));
+
+        List<User> filteredUsers = userPage.getContent()
+                .stream()
+                .filter(user -> (name == null || user.getName().contains(name)) &&
+                        (surname == null || user.getSurname().contains(surname)) &&
+                        (teamId == null || teamId.isEmpty() || teamId.contains(user.getTeam().getId())) &&
+                        (projectId == null || projectId.isEmpty() || user.getProjects()
+                                .stream().map(Project::getId).anyMatch(projectId::contains))).toList();
+
+        List<UserFilterDto> filterDto = filteredUsers.stream()
+                .map(user -> new UserFilterDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getSurname(),
+                        user.getEmail(),
+                        user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()),
+                        user.getTeam().getId(),
+                        user.getProjects().stream().map(Project::getId).toList())
+                )
+                .collect(Collectors.toList());
+
+        return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
     }
 }

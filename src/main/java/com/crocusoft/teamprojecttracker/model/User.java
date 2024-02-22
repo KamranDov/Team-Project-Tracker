@@ -2,7 +2,6 @@ package com.crocusoft.teamprojecttracker.model;
 
 import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -43,14 +42,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     UserActionStatus userActionStatus;
 
-    @CreationTimestamp
-    @Column(updatable = false, name = "created_at")
-    LocalDate createdAt;
-
-    @UpdateTimestamp
-    @Column(insertable = false, name = "updated_at")
-    LocalDate updatedAt;
-
     @ManyToMany(fetch = FetchType.EAGER)
     Set<Role> authorities;
 
@@ -62,6 +53,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<DailyReport> dailyReports;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "employees", cascade = {
             CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     List<Project> projects;

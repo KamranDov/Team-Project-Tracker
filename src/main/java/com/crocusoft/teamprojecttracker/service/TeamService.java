@@ -1,7 +1,10 @@
 package com.crocusoft.teamprojecttracker.service;
 
-import com.crocusoft.teamprojecttracker.dto.request.TeamRequest;
-import com.crocusoft.teamprojecttracker.dto.response.TeamResponse;
+import com.crocusoft.teamprojecttracker.dto.response.team.CreateTeamResponse;
+import com.crocusoft.teamprojecttracker.dto.response.team.EditTeamResponse;
+import com.crocusoft.teamprojecttracker.dto.response.team.ViewTeamAllUsersResponse;
+import com.crocusoft.teamprojecttracker.exception.TeamDeleteByUsersException;
+import com.crocusoft.teamprojecttracker.exception.TeamNotFoundException;
 import com.crocusoft.teamprojecttracker.mapper.Convert;
 import com.crocusoft.teamprojecttracker.model.Team;
 import com.crocusoft.teamprojecttracker.model.User;
@@ -24,24 +27,47 @@ public class TeamService {
     private final Convert convert;
     private final UserRepository userRepository;
 
-    public TeamResponse createTeam(String createdTeamName) {
+    public CreateTeamResponse createTeam(String createdTeamName) {
         Team newTeam = new Team();
         newTeam.setName(createdTeamName);
-        return convert.teamToTeamResponse(teamRepository.save(newTeam));
+        return convert.teamCreate(teamRepository.save(newTeam));
     }
 
-    public Map<String, Team> editTeam(String changeTeamName, String newTeamName) {
-        Team existingTeam = (teamMap.get(changeTeamName) == null) ? teamRepository.findByName(changeTeamName) : teamMap.get(changeTeamName);
-        if (existingTeam != null) {
+    public EditTeamResponse editTeam(Long id, String newTeamName) throws TeamNotFoundException {
+        Optional<Team> optionalTeam = teamRepository.findById(id);
+        if (optionalTeam.isPresent()) {
+            Team existingTeam = optionalTeam.get();
+            String oldTeamName = existingTeam.getName();
             existingTeam.setName(newTeamName);
-            teamMap.put(newTeamName, existingTeam);
             teamRepository.save(existingTeam);
-            return teamMap;
-        } else throw new IllegalArgumentException("No team name found to update");
+
+            EditTeamResponse editTeamResponse = EditTeamResponse.builder()
+                    .id(existingTeam.getId())
+                    .name(existingTeam.getName()).build();
+            teamMap.remove(oldTeamName);
+            teamMap.put(newTeamName, existingTeam);
+            return editTeamResponse;
+        } else throw new TeamNotFoundException("No team name found to update");
     }
 
-    public List<User> findUsersByTeamName(String teamName) throws Exception {
-        Optional<List<User>> usersInTeamOptional = userRepository.findAllByTeamName(teamName);
-        return usersInTeamOptional.orElseThrow(() -> new Exception("No users with team name found"));
+    public ViewTeamAllUsersResponse viewUsersInTeamById(Long id) throws TeamNotFoundException {
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            Team team = teamOptional.get();
+            ViewTeamAllUsersResponse viewTeamAllUsersResponse = convert.teamToTeamViewAllUsersResponse(team);
+            return viewTeamAllUsersResponse;
+        } else throw new TeamNotFoundException("No team found with the given ID");
+    }
+
+    public void removeTeam(Long id) throws TeamDeleteByUsersException, TeamNotFoundException {
+        Optional<Team> optionalTeam = teamRepository.findById(id);
+        if (optionalTeam.isPresent()) {
+            Team team = optionalTeam.get();
+            List<User> users = userRepository.findAllByTeamId(id);
+            if (!users.isEmpty()) {
+                throw new TeamDeleteByUsersException("Team cannot be deleted because it has users");
+            } else teamRepository.delete(team);
+        } else throw new TeamNotFoundException("No team found with the given ID" + id);
     }
 }
+
