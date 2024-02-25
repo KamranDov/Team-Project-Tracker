@@ -46,7 +46,7 @@ public class ProjectService {
 
     public EditProjectAndRemoveUsersResponse editProjectAndUsersResponse(Long projectId,
                                                                          String newProjectName,
-                                                                         List<Long> oldEmployeesId) throws ProjectNotFoundException {
+                                                                         List<Long> oldEmployeesId) {
         Optional<Project> projectOptional = projectRepository.findById(projectId);
         if (projectOptional.isPresent()) {
             Project existingProject = projectOptional.get();
@@ -73,7 +73,7 @@ public class ProjectService {
         }
     }
 
-    public ProjectSearchResponse searchByProjectName(String projectName) throws ProjectNotFoundException {
+    public ProjectSearchResponse searchByProjectName(String projectName) {
         Project project = projectRepository.findByName(projectName);
         if (project == null) {
             throw new ProjectNotFoundException("Project not found with the given name" + projectName);

@@ -1,12 +1,18 @@
 spring:
-  #Database Configuration
+
+#Database Configuration
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/team_project_tracker?createDatabaseIfNotExist=true
     username: postgres
-    password: lutfiar123456
-#123456789root
-  #JPA Configuration
+    password: 123456789root
+
+  #Redis Configuration
+  redis:
+    redisson:
+      file: classpath:redisson.yml
+
+#JPA Configuration
   jpa:
     #    defer-datasource-initialization: true
     properties:
@@ -19,10 +25,10 @@ spring:
     show_sql: true
 
 #Docker Configuration
-#  docker:
-#    compose:
-#      enabled: true
-#      lifecycle-management: start_and_stop
+  docker:
+    compose:
+      enabled: true
+      lifecycle-management: start_and_stop
 
 
 #  main:

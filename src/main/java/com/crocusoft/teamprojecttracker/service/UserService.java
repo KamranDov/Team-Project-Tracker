@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,64 +89,6 @@ public class UserService {
         } else throw new UserNotFoundException("User not found with ID: " + id);
     }
 
-    //    public FilterUserResponse filterUser(Integer pageNumber,
-//                                         Integer pageCount,
-//                                         String name,
-//                                         String surname,
-//                                         List<Long> teamId,
-//                                         List<Long> projectId) {
-//
-//        Page<User> userPage = userRepository.findAll(PageRequest.of(pageNumber, pageCount));
-//
-////        User nameOrSurname = userRepository.findByNameOrSurname(name, surname);
-//        List<User> pageContent = userPage.getContent();
-//
-//        List<UserFilterDto> filterDto = new ArrayList<>();
-//        for (User user : pageContent) {
-//            UserFilterDto userFilterDto = new UserFilterDto(
-//                    user.getId(),
-//                    user.getName(),
-//                    user.getSurname(),
-//                    user.getEmail(),
-//                    user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()),
-//                    user.getTeam().getId(),
-//                    user.getProjects().stream().map(Project::getId).toList());
-//            filterDto.add(userFilterDto);
-//        }
-//    return new FilterUserResponse(filterDto, userPage.getTotalPages(),userPage.getTotalElements(),userPage.hasNext());
-//    }
-//    public FilterUserResponse filterUser(Integer pageNumber,
-//                                         Integer pageCount,
-//                                         String name,
-//                                         String surname,
-//                                         List<Long> teamId,
-//                                         List<Long> projectId) {
-//
-//        Page<User> userPage = userRepository.findAll(PageRequest.of(pageNumber, pageCount));
-//
-//        List<User> pageContent = userPage.getContent();
-//
-//        List<UserFilterDto> filterDto = new ArrayList<>();
-//        for (User user : pageContent) {
-//            if ((name == null || user.getName().contains(name)) &&
-//                    (surname == null || user.getSurname().contains(surname)) &&
-//                    (teamId == null || teamId.contains(user.getTeam().getId())) &&
-//                    (projectId == null || user.getProjects().stream().map(Project::getId).anyMatch(projectId::contains))) {
-//
-//                UserFilterDto userFilterDto = new UserFilterDto(
-//                        user.getId(),
-//                        user.getName(),
-//                        user.getSurname(),
-//                        user.getEmail(),
-//                        user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()),
-//                        user.getTeam().getId(),
-//                        user.getProjects().stream().map(Project::getId).toList());
-//                filterDto.add(userFilterDto);
-//            }
-//        }
-//
-//        return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
-//    }
     public FilterUserResponse filterUser(Integer pageNumber,
                                          Integer pageCount,
                                          String name,
@@ -158,9 +102,11 @@ public class UserService {
                 .stream()
                 .filter(user -> (name == null || user.getName().contains(name)) &&
                         (surname == null || user.getSurname().contains(surname)) &&
-                        (teamId == null || teamId.isEmpty() || teamId.contains(user.getTeam().getId())) &&
-                        (projectId == null || projectId.isEmpty() || user.getProjects()
-                                .stream().map(Project::getId).anyMatch(projectId::contains))).toList();
+                        (teamId == null || teamId.isEmpty() || (user.getTeam() != null &&
+                                teamId.contains(user.getTeam().getId()))) &&
+                        (projectId == null || projectId.isEmpty() || (user.getProjects() != null &&
+                                user.getProjects().stream().map(Project::getId).anyMatch(projectId::contains))))
+                .toList();
 
         List<UserFilterDto> filterDto = filteredUsers.stream()
                 .map(user -> new UserFilterDto(

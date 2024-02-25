@@ -1,33 +1,52 @@
 package com.crocusoft.teamprojecttracker;
 
-import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
-import com.crocusoft.teamprojecttracker.model.Role;
-import com.crocusoft.teamprojecttracker.model.User;
-import com.crocusoft.teamprojecttracker.repository.RoleRepository;
-import com.crocusoft.teamprojecttracker.repository.UserRepository;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.*;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-@Builder
+//@Builder
 
 public class TeamProjectTrackerApplication {
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     public static void main(String[] args) {
         SpringApplication.run(TeamProjectTrackerApplication.class, args);
     }
 
-//        @Bean
-//        CommandLineRunner initialize(UserRepository userRepository, RoleRepository roleRepository) {
-//            return args -> {
+
+    @Bean
+//    CommandLineRunner initialize(UserRepository userRepository, RoleRepository roleRepository) {
+    CommandLineRunner initialize() {
+        return args -> {
+            System.out.println(redissonClient);
+
+            RBucket<String> test = redissonClient.getBucket("test");
+            test.set("test", Duration.of(5, ChronoUnit.SECONDS));
+
+            RBucket<String> test1 = redissonClient.getBucket("test");
+            String value1 = test1.get();
+            System.out.println(value1);
+
+//            Thread.sleep(5000);
+            TimeUnit.SECONDS.sleep(5);
+
+            RBucket<String> test2 = redissonClient.getBucket("test");
+            String value2 = test2.get();
+            System.out.println(value2);
+
 //                Role superAdminRole = Role.builder()
 //                        .name("SUPER_ADMIN")
 //                        .description("Can create Admin, Head, Employee roles and see all modules.")
@@ -62,8 +81,8 @@ public class TeamProjectTrackerApplication {
 //                        .build();
 //
 //                userRepository.save(superAdminUser);
-//            };
-//        }
-
+        };
     }
+
+}
 

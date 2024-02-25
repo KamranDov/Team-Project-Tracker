@@ -54,9 +54,6 @@ public class UserController {
             @RequestParam(value = "team_id", required = false) List<Long> teamId,
             @RequestParam(value = "project_id", required = false) List<Long> projectId) {
 
-//        if (pageNumber == null) {
-//            pageNumber = 0;
-//        }
         FilterUserResponse response = userService.filterUser(pageNumber, pageCount, name, surname, teamId, projectId);
         return ResponseEntity.ok(response);
     }

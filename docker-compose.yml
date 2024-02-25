@@ -1,5 +1,28 @@
-#version: '3.1'
-#
+version: '3.8'
+services:
+  db:
+    container_name: team-tracker-db
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456789root
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../../docker-volumes/docker-volumes-db:/var/lib/postgresql/data
+
+  redis:
+    container_name: team-tracker-redis
+    image: 'bitnami/redis:latest'
+    restart: always
+    environment:
+      - REDIS_PASSWORD=123456789redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - ../../docker-volumes/docker-volumes-redis:/bitnami/redis/data
+
 ##volumes:
 ##  docker-volumes_data:
 #
