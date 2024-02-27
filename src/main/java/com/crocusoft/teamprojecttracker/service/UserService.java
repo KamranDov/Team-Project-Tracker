@@ -126,8 +126,8 @@ public class UserService {
     }
 
     public String verifyMail(String email) {
-        User user = userRepository.findByEmail(email).
-                orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
 
         Integer generatedOTP = otpGenerator.generateOTP();
         EmailDto emailDto = EmailDto.builder()
@@ -154,8 +154,8 @@ public class UserService {
 //        User user = userRepository.findByEmail(email).
 //                orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
 
-        ForgotPassword forgotPassword = forgotPasswordRepository.findByOtpAndUserEmail(otp, email).
-                orElseThrow(() -> new RuntimeException("Invalid OTP for email: " + otp));
+        ForgotPassword forgotPassword = forgotPasswordRepository.findByOtpAndUserEmail(otp, email)
+                .orElseThrow(() -> new RuntimeException("Invalid OTP for email: " + otp));
 
         if (forgotPassword.getLifeTime().before(Date.from(Instant.now()))) {
             forgotPasswordRepository.deleteById(forgotPassword.getForgotId());

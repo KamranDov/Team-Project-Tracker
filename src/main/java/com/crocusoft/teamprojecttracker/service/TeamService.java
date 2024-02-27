@@ -33,7 +33,7 @@ public class TeamService {
         return convert.teamCreate(teamRepository.save(newTeam));
     }
 
-    public EditTeamResponse editTeam(Long id, String newTeamName) throws TeamNotFoundException {
+    public EditTeamResponse editTeam(Long id, String newTeamName) {
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isPresent()) {
             Team existingTeam = optionalTeam.get();
@@ -50,7 +50,7 @@ public class TeamService {
         } else throw new TeamNotFoundException("No team name found to update");
     }
 
-    public ViewTeamAllUsersResponse viewUsersInTeamById(Long id) throws TeamNotFoundException {
+    public ViewTeamAllUsersResponse viewUsersInTeamById(Long id) {
         Optional<Team> teamOptional = teamRepository.findById(id);
         if (teamOptional.isPresent()) {
             Team team = teamOptional.get();
@@ -59,7 +59,7 @@ public class TeamService {
         } else throw new TeamNotFoundException("No team found with the given ID");
     }
 
-    public void removeTeam(Long id) throws TeamDeleteByUsersException, TeamNotFoundException {
+    public void removeTeam(Long id) {
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isPresent()) {
             Team team = optionalTeam.get();

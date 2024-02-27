@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,6 +45,13 @@ public class DailyReportService {
         if (authentication.getAuthorities().stream().noneMatch(role -> role.getAuthority().equals("USER"))) {
             log.error("Unauthorized attempt to create a new report by a non-USER user");
             throw new RolePermissionException("No permission");
+        }
+        User authenticatedUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + authentication.getName()));
+
+        if (!authenticatedUser.getId().equals(employeeId)) {
+            log.error("Unauthorized attempt to create a new report for another user");
+            throw new RolePermissionException("No permission to create report for another user");
         }
         Project byName = projectRepository.findByName(projectNames);
             User user = userRepository.findById(employeeId)
