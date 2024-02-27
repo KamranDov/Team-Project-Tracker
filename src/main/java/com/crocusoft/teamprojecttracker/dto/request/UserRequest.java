@@ -39,7 +39,7 @@ public final class UserRequest {
 
     @JsonProperty("email")
     @NotBlank(message = "Email cannot be blank")
-    @Pattern(regexp = ".+@crocusoft\\.com$", flags = Pattern.Flag.CASE_INSENSITIVE)
+//    @Pattern(regexp = ".+@crocusoft\\.com$", flags = Pattern.Flag.CASE_INSENSITIVE)
     @Email(message = "Invalid email format")
     String email;
 

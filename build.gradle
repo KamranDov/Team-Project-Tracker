@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
@@ -40,11 +41,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    implementation ("org.redisson:redisson-spring-boot-starter:3.27.0") {
-        exclude group: 'org.redisson', module: 'redisson-spring-data-31'
-    }
-    implementation "org.redisson:redisson-spring-data-27:3.27.0"}
+//    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+//    implementation ("org.redisson:redisson-spring-boot-starter:3.27.0") {
+//        exclude group: 'org.redisson', module: 'redisson-spring-data-31'
+//    }
+//    implementation "org.redisson:redisson-spring-data-27:3.27.0"
+}
 
 tasks.named('bootBuildImage') {
     builder = 'paketobuildpacks/builder-jammy-base:latest'

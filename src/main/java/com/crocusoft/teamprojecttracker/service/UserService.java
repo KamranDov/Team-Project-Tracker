@@ -1,20 +1,21 @@
 package com.crocusoft.teamprojecttracker.service;
 
+import com.crocusoft.teamprojecttracker.dto.EmailDto;
+import com.crocusoft.teamprojecttracker.dto.request.ChangePasswordRequest;
 import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
 import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
 import com.crocusoft.teamprojecttracker.dto.response.user.FilterUserResponse;
 import com.crocusoft.teamprojecttracker.dto.response.user.UserFilterDto;
 import com.crocusoft.teamprojecttracker.dto.response.user.ViewUserResponse;
 import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
+import com.crocusoft.teamprojecttracker.exception.PasswordMismatchException;
 import com.crocusoft.teamprojecttracker.exception.RoleNotFoundException;
 import com.crocusoft.teamprojecttracker.exception.TeamNotFoundException;
 import com.crocusoft.teamprojecttracker.exception.UserNotFoundException;
 import com.crocusoft.teamprojecttracker.mapper.Convert;
-import com.crocusoft.teamprojecttracker.model.Project;
-import com.crocusoft.teamprojecttracker.model.Role;
-import com.crocusoft.teamprojecttracker.model.Team;
-import com.crocusoft.teamprojecttracker.model.User;
+import com.crocusoft.teamprojecttracker.model.*;
 import com.crocusoft.teamprojecttracker.repository.*;
+import com.crocusoft.teamprojecttracker.utils.OTPGenerator;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.random.RandomGenerator;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,14 +41,17 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final ForgotPasswordRepository forgotPasswordRepository;
     private final DailyReportRepository dailyReportRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final Convert convert;
+    private final OTPGenerator otpGenerator;
 
 
-    public CreateAndEditUserResponse editUser(Long id, UserRequest userRequest, UserActionStatus userActionStatus) throws TeamNotFoundException, RoleNotFoundException, UserNotFoundException {
+    public CreateAndEditUserResponse editUser(Long id, UserRequest userRequest, UserActionStatus userActionStatus) {
         Optional<User> optionalTeam = userRepository.findById(id);
         if (optionalTeam.isPresent()) {
             User editUser = optionalTeam.get();
@@ -121,5 +123,53 @@ public class UserService {
                 .collect(Collectors.toList());
 
         return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
+    }
+
+    public String verifyMail(String email) {
+        User user = userRepository.findByEmail(email).
+                orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
+
+        Integer generatedOTP = otpGenerator.generateOTP();
+        EmailDto emailDto = EmailDto.builder()
+                .email(email)
+                .subject("OTP for forgot password request")
+                .message("Attention! This code is confidential. Do not share this code with anyone.\n" + "OTP code: "
+                        + generatedOTP
+                        + ".")
+                .build();
+
+        ForgotPassword forgotPassword = ForgotPassword.builder()
+                .otp(generatedOTP)
+                .lifeTime(new Date(System.currentTimeMillis() + Duration.ofMinutes(5).toMillis()))
+                .user(user)
+                .build();
+
+        emailService.sendMail(emailDto);
+        forgotPasswordRepository.save(forgotPassword);
+        return "Email sent for verification!";
+    }
+
+
+    public String verifyOtp(Integer otp, String email) {
+//        User user = userRepository.findByEmail(email).
+//                orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
+
+        ForgotPassword forgotPassword = forgotPasswordRepository.findByOtpAndUserEmail(otp, email).
+                orElseThrow(() -> new RuntimeException("Invalid OTP for email: " + otp));
+
+        if (forgotPassword.getLifeTime().before(Date.from(Instant.now()))) {
+            forgotPasswordRepository.deleteById(forgotPassword.getForgotId());
+            return "Otp verification failed. The OTP has expired.";
+        }
+        return "Otp verification successful.";
+    }
+
+    public String changePassword(ChangePasswordRequest passwordRequest, String email) {
+        if (!Objects.equals(passwordRequest.getPassword(), passwordRequest.getConfirmPassword())) {
+            throw new PasswordMismatchException("Please enter the password again!");
+        }
+        String encodedPassword = passwordEncoder.encode(passwordRequest.getPassword());
+        userRepository.updatePassword(email, encodedPassword);
+        return "Password has been changed!";
     }
 }

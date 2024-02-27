@@ -1,9 +1,12 @@
 package com.crocusoft.teamprojecttracker.repository;
 
 import com.crocusoft.teamprojecttracker.model.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,18 +22,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByProjectsId(Long id);
 
-    User findByName(String name);
+    @Transactional
+    @Modifying
+    @Query("update User u set u.password = ?2 where u.email = ?1")
+    void updatePassword(String email, String password);
 
-    User findByNameOrSurname(String name, String surname);
-
-
-//    List<User> filterByEmployeeNameAndSurname(String name, String surname);
-
-//    List<User> findByTeamsIn(List<Team> teamsList);
-//
-//    List<User> findByProjectsIn(List<Project> projectsList);
-//
-//    List<User> findByName(String name);
-//
-//    List<User> findBySurname(String surname);
 }

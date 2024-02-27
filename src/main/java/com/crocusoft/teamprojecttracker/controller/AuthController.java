@@ -1,19 +1,18 @@
 package com.crocusoft.teamprojecttracker.controller;
 
 import com.crocusoft.teamprojecttracker.dto.request.AuthRequest;
+import com.crocusoft.teamprojecttracker.dto.request.ChangePasswordRequest;
 import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
 import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
 import com.crocusoft.teamprojecttracker.exception.UnauthorizedException;
 import com.crocusoft.teamprojecttracker.exception.UserRegistrationException;
 import com.crocusoft.teamprojecttracker.service.AuthService;
+import com.crocusoft.teamprojecttracker.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -23,6 +22,7 @@ import static org.springframework.http.HttpStatus.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
@@ -37,8 +37,27 @@ public class AuthController {
     @PostMapping("/sign-up")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
 //    @RolesAllowed({"ADMIN", "SUPER_ADMIN"})
-    ResponseEntity<CreateAndEditUserResponse> register(@Valid @RequestBody UserRequest userRequest) throws UserRegistrationException {
+    ResponseEntity<CreateAndEditUserResponse> register(@Valid @RequestBody UserRequest userRequest) {
         return new ResponseEntity<>(authService.register(userRequest), CREATED);
+    }
 
+    @PostMapping("/verify{email}")
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<String> verifyEmail(@PathVariable(value = "email") String email) {
+        return new ResponseEntity<>(userService.verifyMail(email), OK);
+    }
+
+    @PostMapping("/verifyOTP/{otp}/{email}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> verifyOtp(@PathVariable(value = "otp") Integer otp,
+                                            @PathVariable(value = "email") String email) {
+        return new ResponseEntity<>(userService.verifyOtp(otp, email), OK);
+    }
+
+    @PostMapping("/change-password/{email}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest passwordRequest,
+                                                 @PathVariable(value = "email") String email) {
+        return new ResponseEntity<>(userService.changePassword(passwordRequest, email), OK);
     }
 }

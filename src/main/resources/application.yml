@@ -7,10 +7,10 @@ spring:
     username: postgres
     password: 123456789root
 
-  #Redis Configuration
-  redis:
-    redisson:
-      file: classpath:redisson.yml
+#  #Redis Configuration
+#  redis:
+#    redisson:
+#      file: classpath:redisson.yml
 
 #JPA Configuration
   jpa:
@@ -30,6 +30,21 @@ spring:
       enabled: true
       lifecycle-management: start_and_stop
 
+  #Mail Sender Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: axmedovkamran127@gmail.com
+    password: tlbxhhwcvyvnpmhf
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+          enable: true
+          debug: true
 
 #  main:
 #    allow-bean-definition-overriding: true

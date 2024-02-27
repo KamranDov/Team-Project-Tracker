@@ -1,13 +1,14 @@
-package com.crocusoft.teamprojecttracker.util;
+package com.crocusoft.teamprojecttracker.utils;
 
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
 @Component
-public class OTP {
+public class OTPGenerator {
 
-    public String generateOTP() {
+    //    public String generateOTP()
+//
 //        Random random = new Random();
 //        int otp = random.nextInt(999999);
 //        StringBuilder output = new StringBuilder(Integer.toString(otp));
@@ -16,7 +17,9 @@ public class OTP {
 //            output.insert(0, "0");
 //        }
 //        return output.toString();
+//    }
+    public Integer generateOTP() {
         Random random = new Random();
-        return String.format("%06d", random.nextInt(999999));
+        return (random.nextInt(999999));
     }
 }
