@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 @SpringBootApplication
+@EnableCaching
 @RequiredArgsConstructor
 @Builder
 public class TeamProjectTrackerApplication {
@@ -24,7 +26,6 @@ public class TeamProjectTrackerApplication {
     public static void main(String[] args) {
         SpringApplication.run(TeamProjectTrackerApplication.class, args);
     }
-
     @Bean
     public CommandLineRunner initialize(UserRepository userRepository, RoleRepository roleRepository) {
         return args -> {

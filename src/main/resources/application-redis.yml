@@ -1,3 +1,10 @@
+spring:
+  cache:
+    type: redis
+    host: localhost
+    port: 6379
+
+
 #singleServerConfig:
 #  idleConnectionTimeout: 10000
 #  connectTimeout: 10000

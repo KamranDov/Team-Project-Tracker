@@ -3,7 +3,9 @@ package com.crocusoft.teamprojecttracker.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -11,14 +13,14 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ForgotPassword {
+@Entity
+public class ForgotPassword implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long forgotId;
-    Integer otp;
+    Long id;
+    String otp;
     Date lifeTime;
 
     @OneToOne

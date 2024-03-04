@@ -20,10 +20,10 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${security.jwt.secret}")
+    @Value("${spring.security.jwt.secret}")
     private String SECRET_KEY;
 
-    @Value("${security.jwt.lifetime}")
+    @Value("${spring.security.jwt.lifetime}")
     private Duration jwtLifeTime;
 
     public String extractUsername(String token) {

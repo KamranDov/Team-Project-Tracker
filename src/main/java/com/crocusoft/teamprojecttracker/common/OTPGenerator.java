@@ -1,7 +1,8 @@
-package com.crocusoft.teamprojecttracker.utils;
+package com.crocusoft.teamprojecttracker.common;
 
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 
 @Component
@@ -18,8 +19,9 @@ public class OTPGenerator {
 //        }
 //        return output.toString();
 //    }
-    public Integer generateOTP() {
-        Random random = new Random();
-        return (random.nextInt(999999));
+    public String generateOTP() {
+//        Random random = new Random();
+//        return String.format("%06d", random.nextInt(999999));
+        return new DecimalFormat("000000").format(new Random().nextInt(999999));
     }
 }

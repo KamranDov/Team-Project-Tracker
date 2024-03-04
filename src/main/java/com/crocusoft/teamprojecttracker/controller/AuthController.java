@@ -1,11 +1,13 @@
 package com.crocusoft.teamprojecttracker.controller;
 
+import com.crocusoft.teamprojecttracker.dto.ForgotPasswordDto;
 import com.crocusoft.teamprojecttracker.dto.request.AuthRequest;
 import com.crocusoft.teamprojecttracker.dto.request.ChangePasswordRequest;
 import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
 import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
 import com.crocusoft.teamprojecttracker.exception.UnauthorizedException;
 import com.crocusoft.teamprojecttracker.exception.UserRegistrationException;
+import com.crocusoft.teamprojecttracker.model.ForgotPassword;
 import com.crocusoft.teamprojecttracker.service.AuthService;
 import com.crocusoft.teamprojecttracker.service.UserService;
 import jakarta.validation.Valid;
@@ -43,13 +45,13 @@ public class AuthController {
 
     @PostMapping("/verify{email}")
     @PreAuthorize("hasAuthority('USER')")
-    ResponseEntity<String> verifyEmail(@PathVariable(value = "email") String email) {
+    ResponseEntity<ForgotPasswordDto> verifyEmail(@PathVariable(value = "email") String email) {
         return new ResponseEntity<>(userService.verifyMail(email), OK);
     }
 
     @PostMapping("/verifyOTP/{otp}/{email}")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> verifyOtp(@PathVariable(value = "otp") Integer otp,
+    public ResponseEntity<ForgotPasswordDto> verifyOtp(@PathVariable(value = "otp") String otp,
                                             @PathVariable(value = "email") String email) {
         return new ResponseEntity<>(userService.verifyOtp(otp, email), OK);
     }

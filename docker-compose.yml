@@ -1,53 +1,55 @@
 version: '3.8'
 services:
+  redis:
+    image: redis
+    container_name: team-tracker-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    networks:
+      - team-project-tracker-network
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: team-tracker-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456789root
+      POSTGRES_DB: team_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../../postgres-data:/var/lib/postgresql/data
+    networks:
+      - team-project-tracker-network
+
   app:
-    image: kamran01/team-project-tracker:0.0.1
+    build: .
     container_name: team-tracker-backend
     ports:
-      - '8080:8080'
-    environment:
-      URL: "jdbc:postgresql://db:5432/team_tracker"
-      USERNAME: "postgres"
-      PASSWORD: "123456789secret"
-    networks:
-      - team-project-tracker-network
+      - "8090:8090"
     depends_on:
-      - db
-
-  db:
-    image: postgres
-    container_name: team-tracker-db
-    restart: always
+      - postgres
     environment:
-#      - POSTGRES_INITDB_ARGS: '--auth-host=scram-sha-256 --auth-local=scram-sha-256'
-      - POSTGRES_HOST_AUTH_METHOD=scram-sha-256
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456789secret
-      - POSTGRES_DB=team_tracker
-    ports:
-      - '5433:5432'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/team_tracker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456789root
+
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - ../../backups/database:/var/backups
-      - ./postgresql.conf:/etc/postgres/sql/postgresql.conf
-    #    volumes:
-    #      - C:\Program Files\PostgreSQL\16\docker-volumes\docker-volumes-db:/var/lib/postgresql/data
+      - ../../postgres-data:/var/lib/postgresql/data
     networks:
       - team-project-tracker-network
-volumes:
-  db-data:
-    driver: local
+
+
 networks:
   team-project-tracker-network:
     driver: bridge
 #
-#  redis:
-#    container_name: team-tracker-redis
-#    image: 'bitnami/redis:latest'
-#    restart: always
-#    environment:
-#      - REDIS_PASSWORD=123456789redis
-#    ports:
-#      - '6379:6379'
-#    volumes:
-#      - ../../docker-volumes/docker-volumes-redis:/bitnami/redis/data
+#  #    volumes:
+#  #      db-data:
+#  #        driver: local
+#  #     networks:
+#  #     team-project-tracker-network:
+#  #       driver: bridge
+#  #

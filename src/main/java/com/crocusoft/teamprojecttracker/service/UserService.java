@@ -1,6 +1,8 @@
 package com.crocusoft.teamprojecttracker.service;
 
+import com.crocusoft.teamprojecttracker.common.OTPGenerator;
 import com.crocusoft.teamprojecttracker.dto.EmailDto;
+import com.crocusoft.teamprojecttracker.dto.ForgotPasswordDto;
 import com.crocusoft.teamprojecttracker.dto.request.ChangePasswordRequest;
 import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
 import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
@@ -15,10 +17,12 @@ import com.crocusoft.teamprojecttracker.exception.UserNotFoundException;
 import com.crocusoft.teamprojecttracker.mapper.Convert;
 import com.crocusoft.teamprojecttracker.model.*;
 import com.crocusoft.teamprojecttracker.repository.*;
-import com.crocusoft.teamprojecttracker.utils.OTPGenerator;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -125,11 +129,12 @@ public class UserService {
         return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
     }
 
-    public String verifyMail(String email) {
+    @CachePut(value = "forgotPassword", key = "#otp")
+    public ForgotPasswordDto verifyMail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
 
-        Integer generatedOTP = otpGenerator.generateOTP();
+        String generatedOTP = otpGenerator.generateOTP();
         EmailDto emailDto = EmailDto.builder()
                 .email(email)
                 .subject("OTP for forgot password request")
@@ -144,24 +149,34 @@ public class UserService {
                 .user(user)
                 .build();
 
+        ForgotPasswordDto forgotPasswordDto = ForgotPasswordDto.builder()
+                .otp(forgotPassword.getOtp())
+                .lifeTime(forgotPassword.getLifeTime())
+                .userId(forgotPassword.getUser().getId())
+                .build();
+
         emailService.sendMail(emailDto);
         forgotPasswordRepository.save(forgotPassword);
-        return "Email sent for verification!";
+        return forgotPasswordDto;
     }
 
-
-    public String verifyOtp(Integer otp, String email) {
-//        User user = userRepository.findByEmail(email).
-//                orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
+    @Cacheable(value = "forgotPassword", key = "#otp")
+    public ForgotPasswordDto verifyOtp(String otp, String email) {
 
         ForgotPassword forgotPassword = forgotPasswordRepository.findByOtpAndUserEmail(otp, email)
                 .orElseThrow(() -> new RuntimeException("Invalid OTP for email: " + otp));
 
+        ForgotPasswordDto forgotPasswordConvert = ForgotPasswordDto.builder()
+                .otp(forgotPassword.getOtp())
+                .lifeTime(forgotPassword.getLifeTime())
+                .userId(forgotPassword.getUser().getId())
+                .build();
+
         if (forgotPassword.getLifeTime().before(Date.from(Instant.now()))) {
-            forgotPasswordRepository.deleteById(forgotPassword.getForgotId());
-            return "Otp verification failed. The OTP has expired.";
+            forgotPasswordRepository.deleteById(forgotPassword.getId());
+            throw new RuntimeException("Otp verification failed. The OTP has expired.");
         }
-        return "Otp verification successful.";
+        return forgotPasswordConvert;
     }
 
     public String changePassword(ChangePasswordRequest passwordRequest, String email) {
