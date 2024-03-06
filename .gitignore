@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+postgres-data
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -25,7 +26,6 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-postgres-data
 
 ### NetBeans ###
 /nbproject/private/
