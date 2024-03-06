@@ -1,6 +1,5 @@
 HELP.md
 .gradle
-postgres-data
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -24,6 +23,7 @@ bin/
 *.iml
 *.ipr
 out/
+postgres-data/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
