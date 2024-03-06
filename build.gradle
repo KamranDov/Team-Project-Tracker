@@ -42,7 +42,7 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
-    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
+//    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 //    implementation ("org.redisson:redisson-spring-boot-starter:3.27.0") {
 //        exclude group: 'org.redisson', module: 'redisson-spring-data-31'

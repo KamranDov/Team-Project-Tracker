@@ -20,7 +20,6 @@ import com.crocusoft.teamprojecttracker.repository.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -129,7 +128,7 @@ public class UserService {
         return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
     }
 
-    @CachePut(value = "forgotPassword", key = "#otp")
+    @CachePut(value = "forgotPassword", key = "#generatedOTP")
     public ForgotPasswordDto verifyMail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));

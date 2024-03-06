@@ -1,8 +1,5 @@
 package com.crocusoft.teamprojecttracker.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 public class RolePermissionException extends RuntimeException {
     public RolePermissionException(String message) {
         super(message);

@@ -22,8 +22,8 @@ public class CreateAndEditUserResponse {
     @JsonProperty("email")
     String email;
 
-    @JsonProperty("roles")
-    List<String> roles;
+    @JsonProperty("role name")
+    String roleName;
 
     @JsonProperty("team_name")
     String teamName;

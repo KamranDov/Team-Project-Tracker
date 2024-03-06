@@ -7,49 +7,43 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
-    networks:
-      - team-project-tracker-network
+  #    networks:
+  #      - team-project-tracker-network
 
-  postgres:
-    image: postgres:13-alpine
+  db:
+    image: postgres
     container_name: team-tracker-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456789root
-      POSTGRES_DB: team_tracker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456789root
+      - POSTGRES_DB=tracker
     ports:
-      - "5432:5432"
+      - "3232:5432"
     volumes:
-      - ../../postgres-data:/var/lib/postgresql/data
-    networks:
-      - team-project-tracker-network
-
-  app:
-    build: .
-    container_name: team-tracker-backend
-    ports:
-      - "8090:8090"
-    depends_on:
-      - postgres
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/team_tracker
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 123456789root
-
-    volumes:
-      - ../../postgres-data:/var/lib/postgresql/data
-    networks:
-      - team-project-tracker-network
-
-
-networks:
-  team-project-tracker-network:
-    driver: bridge
+      - ./postgres-data:/var/lib/postgresql/data
+#    networks:
+#      - team-project-tracker-network
 #
-#  #    volumes:
-#  #      db-data:
-#  #        driver: local
-#  #     networks:
-#  #     team-project-tracker-network:
-#  #       driver: bridge
-#  #
+#  app:
+#    build: .
+#    container_name: team-tracker-backend
+#    ports:
+#      - "8090:8090"
+#    depends_on:
+#      - db
+#    environment:
+#      - POSTGRES_URL=jdbc:postgresql://db:5432/tracker?createDatabaseIfNotExist=true
+#      - POSTGRES_USERNAME=postgres
+#      - POSTGRES_PASSWORD=123456789root
+#
+#    volumes:
+#      - /postgres-data:/var/lib/postgresql/data
+#    networks:
+#      - team-project-tracker-network
+#
+volumes:
+  postgres-data:
+    driver: local
+#networks:
+#  team-project-tracker-network:
+#    driver: bridge

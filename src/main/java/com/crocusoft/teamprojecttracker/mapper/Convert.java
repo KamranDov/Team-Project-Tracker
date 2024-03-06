@@ -10,6 +10,7 @@ import com.crocusoft.teamprojecttracker.dto.response.team.ViewTeamAllUsersRespon
 import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
 import com.crocusoft.teamprojecttracker.dto.response.user.ViewUserResponse;
 import com.crocusoft.teamprojecttracker.model.*;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,12 +23,11 @@ public class Convert {
                 user.getName(),
                 user.getSurname(),
                 user.getEmail(),
-//user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())
-                user.getAuthorities().stream()
-                        .filter(authority -> authority instanceof Role)
-                        .map(authority -> ((Role) authority).getName())
-                        .toList(),
-//                user.getAuthorities().stream().map(authority -> ((Role) authority).getName()).toList(),
+//                user.getAuthorities().stream()
+//                        .filter(authority -> authority instanceof Role)
+//                        .map(authority -> ((Role) authority).getName())
+//                        .toList(),
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining()),
                 user.getTeam().getName());
     }
 
@@ -53,11 +53,14 @@ public class Convert {
                 user.getName(),
                 user.getSurname(),
                 user.getEmail(),
-//                user.getAuthorities().stream().map(authority -> ((Role) authority).getName()).toList(),
-                user.getAuthorities().stream()
-                        .filter(authority -> authority instanceof Role)
-                        .map(authority -> ((Role) authority).getName())
-                        .toList(),
+//                user.getAuthorities().stream()
+//                        .filter(authority -> authority instanceof Role)
+//                        .map(authority -> ((Role) authority).getName())
+//                        .collect(Collectors.toSet()),
+                user.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.joining()),
                 user.getTeam().getName(),
                 user.getProjects().stream().map(Project::getName).toList()
         );
