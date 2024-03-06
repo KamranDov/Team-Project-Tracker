@@ -1,0 +1,5 @@
+spring:
+  security:
+    jwt:
+     secret: "AAAAB3NzaC1yc2EAAAADAQABAAAAgQDYj4ZZDmECmQ3RveM3IHmhKJmjG9AFA6m4eMj1bmhmZW1FHMPcikdKeMcThKVvfmV8soxQz64ZS"
+     lifetime: 30m

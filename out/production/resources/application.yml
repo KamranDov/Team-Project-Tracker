@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    include:
+      - db
+      - docker-config
+      - email
+      - security
+
+
+      #Server Port Configuration
+server:
+  port: 8090
+
+    #  #Redis Configuration
+    #  redis:
+  #    redisson:
+  #      file: classpath:application-redis.yml
+
+#  main:
+#    allow-bean-definition-overriding: true
+
+#SQL Configuration
+#  sql:
+#   init:
+#     mode: always
+#     platform: mysql
+#     schema-locations: classpath:SqlCommands/create_roles.sql
+#, classpath:SqlCommands/create_Super_Admin.sql
+
+#logging:
+#  file:
+#    name:

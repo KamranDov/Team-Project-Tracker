@@ -22,8 +22,7 @@ bin/
 *.iws
 *.iml
 *.ipr
-out/
-*postgres-data
+#out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
