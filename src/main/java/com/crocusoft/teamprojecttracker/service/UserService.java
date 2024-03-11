@@ -127,8 +127,8 @@ public class UserService {
 
     @Cacheable(value = "forgotPassword", key = "#generatedOTP")
     public ForgotPasswordDto verifyMail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new UserNotFoundException("Please provide an valid email!"));
 
         String generatedOTP = otpGenerator.generateOTP();
         EmailDto emailDto = EmailDto.builder()
