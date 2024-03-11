@@ -48,6 +48,7 @@ dependencies {
 //        exclude group: 'org.redisson', module: 'redisson-spring-data-31'
 //    }
 //    implementation "org.redisson:redisson-spring-data-27:3.27.0"
+//    implementation group: 'com.redis.om', name: 'redis-om-spring', version: '0.8.9'
 }
 
 tasks.named('bootBuildImage') {

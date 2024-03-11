@@ -145,5 +145,14 @@ public class GeneralExceptionHandler {
                 exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(OtpExpiredException.class)
+    public ResponseEntity<ExceptionResponse> otpExpiredException(OtpExpiredException exception) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                LocalDateTime.now(),
+                HttpStatus.GONE.value(),
+                HttpStatus.GONE,
+                exception.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.GONE);
+    }
 }
 

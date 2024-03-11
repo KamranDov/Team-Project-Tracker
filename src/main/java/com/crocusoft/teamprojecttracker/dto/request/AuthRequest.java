@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
+import java.io.Serializable;
+
 public record AuthRequest(
         @NotNull
         @NotBlank(message = "Email is required.")
@@ -16,5 +18,5 @@ public record AuthRequest(
         @Length(min = 5, max = 25)
         String password
 
-) {
+) implements Serializable {
 }

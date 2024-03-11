@@ -10,10 +10,7 @@ import com.crocusoft.teamprojecttracker.dto.response.user.FilterUserResponse;
 import com.crocusoft.teamprojecttracker.dto.response.user.UserFilterDto;
 import com.crocusoft.teamprojecttracker.dto.response.user.ViewUserResponse;
 import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
-import com.crocusoft.teamprojecttracker.exception.PasswordMismatchException;
-import com.crocusoft.teamprojecttracker.exception.RoleNotFoundException;
-import com.crocusoft.teamprojecttracker.exception.TeamNotFoundException;
-import com.crocusoft.teamprojecttracker.exception.UserNotFoundException;
+import com.crocusoft.teamprojecttracker.exception.*;
 import com.crocusoft.teamprojecttracker.mapper.Convert;
 import com.crocusoft.teamprojecttracker.model.*;
 import com.crocusoft.teamprojecttracker.repository.*;
@@ -128,7 +125,7 @@ public class UserService {
         return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
     }
 
-    @CachePut(value = "forgotPassword", key = "#generatedOTP")
+    @Cacheable(value = "forgotPassword", key = "#generatedOTP")
     public ForgotPasswordDto verifyMail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Please provide an valid email!"));
@@ -173,11 +170,12 @@ public class UserService {
 
         if (forgotPassword.getLifeTime().before(Date.from(Instant.now()))) {
             forgotPasswordRepository.deleteById(forgotPassword.getId());
-            throw new RuntimeException("Otp verification failed. The OTP has expired.");
+            throw new OtpExpiredException("Otp verification failed. The OTP has expired.");
         }
         return forgotPasswordConvert;
     }
 
+    @CachePut(value = "forgotPassword", key = "#passwordRequest")
     public String changePassword(ChangePasswordRequest passwordRequest, String email) {
         if (!Objects.equals(passwordRequest.getPassword(), passwordRequest.getConfirmPassword())) {
             throw new PasswordMismatchException("Please enter the password again!");

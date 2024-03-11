@@ -11,6 +11,9 @@ import com.crocusoft.teamprojecttracker.model.User;
 import com.crocusoft.teamprojecttracker.repository.TeamRepository;
 import com.crocusoft.teamprojecttracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,18 +24,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TeamService {
-
     private final Map<String, Team> teamMap = new HashMap<>();
     private final TeamRepository teamRepository;
     private final Convert convert;
     private final UserRepository userRepository;
 
+    @Cacheable(key = "#createdTeamName", value = "team")
     public CreateTeamResponse createTeam(String createdTeamName) {
         Team newTeam = new Team();
         newTeam.setName(createdTeamName);
         return convert.teamCreate(teamRepository.save(newTeam));
     }
 
+    @CachePut(key = "#id", value = "team")
     public EditTeamResponse editTeam(Long id, String newTeamName) {
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isPresent()) {
@@ -50,6 +54,7 @@ public class TeamService {
         } else throw new TeamNotFoundException("No team name found to update");
     }
 
+    @Cacheable(key = "#id", value = "team")
     public ViewTeamAllUsersResponse viewUsersInTeamById(Long id) {
         Optional<Team> teamOptional = teamRepository.findById(id);
         if (teamOptional.isPresent()) {
@@ -59,6 +64,7 @@ public class TeamService {
         } else throw new TeamNotFoundException("No team found with the given ID");
     }
 
+    @CacheEvict(value = "team", allEntries = true)
     public void removeTeam(Long id) {
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isPresent()) {

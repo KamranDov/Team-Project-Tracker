@@ -66,7 +66,7 @@ public class DailyReportService {
         }
 
 
-    public DailyReport updateReport(Long reportId, String text) throws UserNotFoundException, ReportCreationTimeExpiredException {
+    public DailyReport updateReport(Long reportId, String text){
         Optional<DailyReport> dailyReportOptional = dailyReportRepository.findById(reportId);
         if (dailyReportOptional.isPresent()) {
             DailyReport existingReport = dailyReportOptional.get();
@@ -82,7 +82,7 @@ public class DailyReportService {
         throw new UserNotFoundException("Report not found with ID: " + reportId);
     }
 
-    public ViewDailyReportResponse viewReport(Long reportId) throws ReportNotFoundException {
+    public ViewDailyReportResponse viewReport(Long reportId){
         Optional<DailyReport> dailyReportOptional = dailyReportRepository.findById(reportId);
         if (dailyReportOptional.isPresent()) {
             return convert.dailyReportToViewDailyReportResponse(dailyReportOptional.get());
