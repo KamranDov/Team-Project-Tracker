@@ -1,7 +1,7 @@
-#spring:
-#  docker:
-#    compose:
-#      enabled: true
-##      skip:
-##        in-tests: true
-#      lifecycle-management: start_and_stop
+spring:
+  docker:
+    compose:
+      enabled: true
+      skip:
+        in-tests: true
+      lifecycle-management: start_and_stop

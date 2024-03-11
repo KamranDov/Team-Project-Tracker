@@ -5,16 +5,7 @@ spring:
       - docker-config
       - email
       - security
-
-
-      #Server Port Configuration
-server:
-  port: 8090
-
-    #  #Redis Configuration
-    #  redis:
-  #    redisson:
-  #      file: classpath:application-redis.yml
+      - server-port
 
 #  main:
 #    allow-bean-definition-overriding: true

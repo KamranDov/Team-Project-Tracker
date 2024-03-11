@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Builder
 @Data
 @NoArgsConstructor
@@ -25,6 +23,6 @@ public class CreateAndEditUserResponse {
     @JsonProperty("role name")
     String roleName;
 
-    @JsonProperty("team_name")
+    @JsonProperty("team name")
     String teamName;
 }
