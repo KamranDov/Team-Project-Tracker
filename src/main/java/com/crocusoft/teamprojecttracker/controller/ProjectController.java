@@ -31,7 +31,7 @@ public class ProjectController {
     }
 
     @GetMapping("/view/{id}")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'HEAD')")
     public ResponseEntity<ViewProjectAndUsersResponse> view(@PathVariable("id") Long id) throws ProjectNotFoundException {
         return new ResponseEntity<>(projectService.viewProjectAndUsersById(id), OK);
     }

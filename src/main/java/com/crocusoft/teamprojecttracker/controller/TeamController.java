@@ -32,7 +32,7 @@ public class TeamController {
     }
 
     @GetMapping("/view{id}")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'HEAD')")
     public ResponseEntity<ViewTeamAllUsersResponse> getAllEmployeeByTeamName(@PathVariable("id") Long id) throws Exception {
         return new ResponseEntity<>(teamService.viewUsersInTeamById(id), OK);
     }

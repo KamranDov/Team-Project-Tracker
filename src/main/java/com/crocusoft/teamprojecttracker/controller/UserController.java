@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/view{id}")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'HEAD')")
     public ResponseEntity<ViewUserResponse> view(@PathVariable("id") Long id) throws UserNotFoundException {
         return new ResponseEntity<>(userService.viewUserById(id), OK);
     }

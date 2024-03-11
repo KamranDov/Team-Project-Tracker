@@ -40,7 +40,7 @@ public class DailyReportController {
     }
 
     @GetMapping("/view-report{id}")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'HEAD', 'USER')")
     public ResponseEntity<ViewDailyReportResponse> viewReport(@PathVariable("id") Long reportId) throws ReportNotFoundException {
         return new ResponseEntity<>(dailyReportService.viewReport(reportId), OK);
     }
