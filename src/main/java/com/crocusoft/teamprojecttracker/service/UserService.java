@@ -125,7 +125,7 @@ public class UserService {
         return new FilterUserResponse(filterDto, userPage.getTotalPages(), userPage.getTotalElements(), userPage.hasNext());
     }
 
-    @Cacheable(value = "forgotPassword", key = "#generatedOTP")
+    @Cacheable(value = "forgotPassword", key = "#email")
     public ForgotPasswordDto verifyMail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UserNotFoundException("Please provide an valid email!"));
