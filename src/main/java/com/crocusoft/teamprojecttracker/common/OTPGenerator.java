@@ -22,6 +22,7 @@ public class OTPGenerator {
     public String generateOTP() {
 //        Random random = new Random();
 //        return String.format("%06d", random.nextInt(999999));
+
         return new DecimalFormat("000000").format(new Random().nextInt(999999));
     }
 }

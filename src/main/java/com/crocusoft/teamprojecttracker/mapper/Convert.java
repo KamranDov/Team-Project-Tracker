@@ -89,18 +89,4 @@ public class Convert {
                 dailyReport.getEmployee().getSurname(),
                 dailyReport.getProject().getId());
     }
-
-//    public FilterUserResponse userToFilterUserResponse(User user) {
-//        return new FilterUserResponse(
-//                user.getId(),
-//                user.getName(),
-//                user.getSurname(),
-//                user.getEmail(),
-//                user.getAuthorities().stream()
-//                        .filter(authority -> authority instanceof Role)
-//                        .map(authority -> ((Role) authority).getName())
-//                        .toList().toString(),
-//                user.getTeam().getId(),
-//                user.getProjects().stream().map(Project::getId).toList());
-//    }
 }

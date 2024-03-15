@@ -4,6 +4,7 @@ import com.crocusoft.teamprojecttracker.dto.ForgotPasswordDto;
 import com.crocusoft.teamprojecttracker.dto.request.AuthRequest;
 import com.crocusoft.teamprojecttracker.dto.request.ChangePasswordRequest;
 import com.crocusoft.teamprojecttracker.dto.request.UserRequest;
+import com.crocusoft.teamprojecttracker.dto.response.AuthResponse;
 import com.crocusoft.teamprojecttracker.dto.response.user.CreateAndEditUserResponse;
 import com.crocusoft.teamprojecttracker.exception.UnauthorizedException;
 import com.crocusoft.teamprojecttracker.exception.UserRegistrationException;
@@ -27,13 +28,8 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
-        try {
-            return ResponseEntity.ok(authService.login(authRequest));
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(UNAUTHORIZED).body("an error occurred: " + e.getMessage());
-        }
-
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
+        return new ResponseEntity<>(authService.login(authRequest), OK);
     }
 
     @PostMapping("/sign-up")
@@ -52,7 +48,7 @@ public class AuthController {
     @PostMapping("/verifyOTP/{otp}/{email}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<ForgotPasswordDto> verifyOtp(@PathVariable(value = "otp") String otp,
-                                            @PathVariable(value = "email") String email) {
+                                                       @PathVariable(value = "email") String email) {
         return new ResponseEntity<>(userService.verifyOtp(otp, email), OK);
     }
 

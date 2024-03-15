@@ -3,7 +3,8 @@ spring:
     type: redis
     host: localhost
     port: 6379
-
+#    redis:
+#      time-to-live: 520000s
 
 #singleServerConfig:
 #  idleConnectionTimeout: 10000

@@ -36,9 +36,7 @@ public class SecurityConfig {
 //                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x ->
-                                x.requestMatchers(POST, ("authentication/**")
-                                                ,("/teams/edit")).permitAll()
-
+                                x.requestMatchers(POST, ("authentication/**")).permitAll()
                                         .requestMatchers(permitSwagger).permitAll()
 
 //                                        .requestMatchers("/api/v1/super-admin/**"
@@ -80,7 +78,6 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-//            "/https://furnirostore.up.railway.app/images/Product-images/**"
     };
 
 }
