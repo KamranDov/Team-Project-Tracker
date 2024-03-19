@@ -65,7 +65,6 @@ public class DailyReportService {
             return convert.dailyReportToCreateNewReportResponse(dailyReportRepository.save(dailyReport));
         }
 
-
     public DailyReport updateReport(Long reportId, String text){
         Optional<DailyReport> dailyReportOptional = dailyReportRepository.findById(reportId);
         if (dailyReportOptional.isPresent()) {
@@ -99,8 +98,8 @@ public class DailyReportService {
                 .toList();
 
         return new DailyFilterResponse(
-                filteredReports.stream().map(x -> x.getEmployee().getId()).collect(Collectors.toList()),
-                filteredReports.stream().map(x -> x.getProject().getName()).toList(),
+                filteredReports.stream().map(employeeId -> employeeId.getEmployee().getId()).collect(Collectors.toList()),
+                filteredReports.stream().map(employeeProjectName -> employeeProjectName.getProject().getName()).toList(),
                 filteredReports.stream().map(DailyReport::getCreatedAt).toList(),
                 dailyReportPage.getTotalPages(),
                 dailyReportPage.getTotalElements(),

@@ -39,7 +39,7 @@ public class TeamController {
 
     @DeleteMapping("/remove{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
-    public ResponseEntity<String> removeTeam(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<String> removeTeam(@PathVariable("id") Long id) {
         teamService.removeTeam(id);
         return ResponseEntity.ok("Team deleted successfully");
 

@@ -72,7 +72,7 @@ public class AuthService {
             }
     }
 
-    @Cacheable(value = "usersLogin", key = "#authRequest")
+//    @Cacheable(value = "usersLogin", key = "#authRequest")
     public AuthResponse login(AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

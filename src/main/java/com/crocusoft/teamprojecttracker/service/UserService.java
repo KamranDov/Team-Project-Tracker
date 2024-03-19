@@ -1,6 +1,6 @@
 package com.crocusoft.teamprojecttracker.service;
 
-import com.crocusoft.teamprojecttracker.common.OTPGenerator;
+import com.crocusoft.teamprojecttracker.util.OTPGenerator;
 import com.crocusoft.teamprojecttracker.dto.EmailDto;
 import com.crocusoft.teamprojecttracker.dto.ForgotPasswordDto;
 import com.crocusoft.teamprojecttracker.dto.request.ChangePasswordRequest;

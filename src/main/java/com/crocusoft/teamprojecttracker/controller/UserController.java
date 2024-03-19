@@ -40,12 +40,12 @@ public class UserController {
 
     @GetMapping("/view{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'HEAD')")
-    public ResponseEntity<ViewUserResponse> view(@PathVariable("id") Long id) throws UserNotFoundException {
+    public ResponseEntity<ViewUserResponse> view(@PathVariable("id") Long id) {
         return new ResponseEntity<>(userService.viewUserById(id), OK);
     }
 
     @GetMapping("/filter")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'HEAD')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
     public ResponseEntity<FilterUserResponse> filterUsers(
             @RequestParam(value = "page number", defaultValue = DefaultPageValues.PAGE_NUMBER) Integer pageNumber,
             @RequestParam(value = "page count", defaultValue = DefaultPageValues.PAGE_COUNT) Integer pageCount,
