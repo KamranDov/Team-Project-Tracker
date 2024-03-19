@@ -35,7 +35,7 @@ public class ExcelExport {
             int dataRowIndex = 1;
             for (DailyReport dailyReport : dailyReports) {
                 if (!dailyReports.isEmpty()) {
-                    HSSFRow dataRow = hssfSheet.createRow(dataRowIndex++);
+                    HSSFRow dataRow = hssfSheet.createRow(dataRowIndex);
                     dataRow.createCell(0).setCellValue(dailyReport.getId());
                     dataRow.createCell(1).setCellValue(dailyReport.getEmployee().getId());
                     dataRow.createCell(2).setCellValue(dailyReport.getEmployee().getName());
