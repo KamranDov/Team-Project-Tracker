@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
@@ -43,12 +44,12 @@ public class ProjectController {
                                                                   @RequestParam(value = "id of employees to be deleted") List<Long> oldEmployeesId) throws ProjectNotFoundException {
         EditProjectAndRemoveUsersResponse edited =
                 projectService.editProjectAndUsersResponse(projectId, newProjectName, oldEmployeesId);
-        return ResponseEntity.ok(edited);
+        return new ResponseEntity<>(edited, ACCEPTED);
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN' , 'ADMIN')")
     public ResponseEntity<ProjectSearchResponse> searchProject(@RequestParam(value = "project name") String projectName) throws ProjectNotFoundException {
-        return new ResponseEntity<>(projectService.searchByProjectName(projectName),OK);
+        return new ResponseEntity<>(projectService.searchByProjectName(projectName), OK);
     }
 }

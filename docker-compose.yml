@@ -18,9 +18,9 @@ services:
     image: postgres
     container_name: team-tracker-db
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456789root
-      - POSTGRES_DB=tracker
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - "3232:5432"
     volumes:

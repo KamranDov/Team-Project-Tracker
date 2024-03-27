@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,7 +29,7 @@ public class DailyReportController {
     @PutMapping("/edit-report{id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<DailyReport> editReport(@PathVariable("id") Long reportId, String text) {
-        return new ResponseEntity<>(dailyReportService.updateReport(reportId, text), OK);
+        return new ResponseEntity<>(dailyReportService.updateReport(reportId, text), ACCEPTED);
     }
 
     @PostMapping("/new-report")

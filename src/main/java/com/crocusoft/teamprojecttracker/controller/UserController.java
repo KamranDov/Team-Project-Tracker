@@ -35,7 +35,7 @@ public class UserController {
                                                           @RequestBody UserRequest userRequest,
                                                           @RequestParam(value = "User status") UserActionStatus userActionStatus)
             throws RoleNotFoundException, TeamNotFoundException, UserNotFoundException {
-        return new ResponseEntity<>(userService.editUser(id, userRequest, userActionStatus), OK);
+        return new ResponseEntity<>(userService.editUser(id, userRequest, userActionStatus), ACCEPTED);
     }
 
     @GetMapping("/view{id}")

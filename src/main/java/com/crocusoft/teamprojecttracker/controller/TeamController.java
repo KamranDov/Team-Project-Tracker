@@ -28,7 +28,7 @@ public class TeamController {
     @PutMapping("/edit{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
     public ResponseEntity<EditTeamResponse> editTeam(@PathVariable("id") Long id, String newTeamName) throws TeamNotFoundException {
-        return new ResponseEntity<>(teamService.editTeam(id, newTeamName), CREATED);
+        return new ResponseEntity<>(teamService.editTeam(id, newTeamName), ACCEPTED);
     }
 
     @GetMapping("/view{id}")
