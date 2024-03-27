@@ -15,7 +15,8 @@ import java.util.HashMap;
 @RestControllerAdvice
 public class GeneralExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<HashMap<Object, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletResponse response) {
+    public ResponseEntity<HashMap<Object, Object>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex, HttpServletResponse response) {
         HashMap<Object, Object> map = new HashMap<>();
         map.put("status", HttpStatus.BAD_REQUEST);
         map.put("statusCode", HttpStatus.BAD_REQUEST.value());
@@ -136,6 +137,7 @@ public class GeneralExceptionHandler {
                 exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(InvalidOtpException.class)
     public ResponseEntity<ExceptionResponse> reportNotFoundException(InvalidOtpException exception) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
@@ -145,6 +147,7 @@ public class GeneralExceptionHandler {
                 exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(OtpExpiredException.class)
     public ResponseEntity<ExceptionResponse> otpExpiredException(OtpExpiredException exception) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(

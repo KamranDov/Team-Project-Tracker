@@ -1,25 +1,21 @@
 package com.crocusoft.teamprojecttracker.dto.request;
 
-import com.crocusoft.teamprojecttracker.enums.UserActionStatus;
-import com.crocusoft.teamprojecttracker.model.Role;
-import com.crocusoft.teamprojecttracker.model.Team;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Builder
 @Data
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public final class UserRequest {
+public class UserRequest {
 
     @JsonProperty("name")
     @NotNull
@@ -31,17 +27,19 @@ public final class UserRequest {
     @NotBlank(message = "Surname cannot be blank")
     String surname;
 
+    @NotNull
+    @JsonProperty("email")
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email cannot be blank")
+    @Pattern(regexp = ".+@crocusoft\\.com$", message = "Email must end with @crocusoft.com.")
+    String email;
+
     @JsonProperty("password")
     @NotNull
     @NotBlank(message = "Password cannot be blank")
     @Length(min = 5, max = 25)
     String password;
 
-    @JsonProperty("email")
-    @NotBlank(message = "Email cannot be blank")
-//    @Pattern(regexp = ".+@crocusoft\\.com$", flags = Pattern.Flag.CASE_INSENSITIVE)
-    @Email(message = "Invalid email format")
-    String email;
 
     @JsonProperty("roles")
     @NotNull(message = "Roles cannot be null")

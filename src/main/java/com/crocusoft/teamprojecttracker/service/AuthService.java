@@ -72,7 +72,6 @@ public class AuthService {
             }
     }
 
-//    @Cacheable(value = "usersLogin", key = "#authRequest")
     public AuthResponse login(AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -89,7 +88,7 @@ public class AuthService {
                         .build();
             }
         } catch (Exception e) {
-            log.error("Error occurred during user login: {}", e.getMessage());
+            log.error("Error occurred during user login");
             throw new UnauthorizedException("You have entered an email or password that does not exist.");
         }
         throw new UnauthorizedException("Authentication failed.");
