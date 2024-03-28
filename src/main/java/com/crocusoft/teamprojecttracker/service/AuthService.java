@@ -43,33 +43,32 @@ public class AuthService {
     private final Convert convert;
 
     public CreateAndEditUserResponse register(UserRequest userRequest) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("SUPER_ADMIN")
-                    || role.getAuthority().equals("ADMIN"))) {
-                Set<Role> roleList = roleRepository.findAllByNameIn(userRequest.getRoles());
-                if (authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN")
-                        && userRequest.getRoles().contains("SUPER_ADMIN"))) {
-                    log.error("Attempted to create a new SUPER ADMIN role by an ADMIN user");
-                    throw new RolePermissionException("ADMIN role does not have permission to create a new SUPER ADMIN role");
-                }
-                Team team = teamRepository.findById(userRequest.getTeamId()).orElseThrow(
-                        () -> new TeamNotFoundException("Team not found" + userRequest.getTeamId()));
-
-                User newUser = User.builder()
-                        .name(userRequest.getName())
-                        .surname(userRequest.getSurname())
-                        .password(passwordEncoder.encode(userRequest.getPassword()))
-                        .email(userRequest.getEmail())
-                        .userActionStatus(UserActionStatus.ACTIVE)
-                        .authorities(roleList)
-                        .team(team)
-                        .build();
-                userRepository.save(newUser);
-                return this.convert.userToUserResponse(newUser);
-            } else {
-                log.error("Unauthorized attempt to register a new user by a non-ADMIN user");
-                throw new RolePermissionException("No permission");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("SUPER_ADMIN")
+                                                                      || role.getAuthority().equals("ADMIN"))) {
+            Set<Role> roleList = roleRepository.findAllByNameIn(userRequest.getRoles());
+            if (authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN")
+                                                                          && userRequest.getRoles().contains("SUPER_ADMIN"))) {
+                log.error("Attempted to create a new SUPER ADMIN role by an ADMIN user");
+                throw new RolePermissionException("ADMIN role does not have permission to create a new SUPER ADMIN role");
             }
+            Team team = teamRepository.findById(userRequest.getTeamId()).orElseThrow(
+                    () -> new TeamNotFoundException("Team not found" + userRequest.getTeamId()));
+            User newUser = User.builder()
+                    .name(userRequest.getName())
+                    .surname(userRequest.getSurname())
+                    .password(passwordEncoder.encode(userRequest.getPassword()))
+                    .email(userRequest.getEmail())
+                    .userActionStatus(UserActionStatus.ACTIVE)
+                    .authorities(roleList)
+                    .team(team)
+                    .build();
+            userRepository.save(newUser);
+            return this.convert.userToUserResponse(newUser);
+        } else {
+            log.error("Unauthorized attempt to register a new user by a non-ADMIN user");
+            throw new RolePermissionException("No permission");
+        }
     }
 
     public AuthResponse login(AuthRequest authRequest) {
